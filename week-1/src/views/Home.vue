@@ -9,7 +9,7 @@
             <div class="name">{{ item.naam }}</div>
             <div class="residence">{{item.afdeling}}</div>
           </div>
-          <div class="close" @click="deleteUser($event)" v-bind:data-id="item.id"></div>
+          <div class="close" @click="deleteUser(item.id)" v-bind:data-id="item.id"></div>
         </div>
       </div>
       
@@ -145,8 +145,8 @@ p{
         }
       },
 
-      deleteUser(event){
-        let id = event.target.dataset.id;
+      deleteUser(id){
+        console.log(id)
         for(let i = 0; i < this.deelnemers.length; i++){
           if(this.deelnemers[i].id == id){
             this.deelnemers.splice(i, 1)
