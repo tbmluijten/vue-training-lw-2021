@@ -7,10 +7,7 @@
             <div class="title">Deelnemers:</div>
             <input type="text" class="search" placeholder="Naam werknemer.." v-model="searchTerm">
             <div class="list">
-              <div class="user" v-for="item in filterItems" :key="item.id">
-                <div class="name">{{item.naam}}</div>
-                <div class="function">{{item.afdeling}}</div>
-              </div>
+              <Users :filterItems="filterItems" @userDetails="userDetails"/>
             </div>
           </div>
         </div>
@@ -21,8 +18,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-
 export default {
   name: 'Home',
   data(){
@@ -35,23 +30,21 @@ export default {
     getUserList(){
       let api = 'http://dump.lwdev.nl/vue-cursus-api/deelnemers/'
       this.axios.get(api).then((response) => {
-        console.log(response.data)
-        // this.deelnemers = response.data;
         this.userList = response.data;
       })
-    }      
+    },
+    
+    userDetails(id){
+      this.$router.push({ path: `/userDetail/${id}` });
+    }
   },
   computed: {
     filterItems: function(){
       //Kijk of er een search term is ingevuld in de input velden
       if(this.searchTerm){
-        //Filter specifiek op naam 
-
-        // NOTE: Ik ben nog niet zon held met filter functies van arrays. Dus dit kan 100% beter genoteerd worden. Nu wordt er een filter gebruikt per type
-        // alleen dit moet uiteraard variabel zijn.
         const naam = this.userList.filter((item)=>{return this.searchTerm.toLowerCase().split(' ').every(user => item.naam.toLowerCase().includes(user))});
         const afdeling = this.userList.filter((item)=>{return this.searchTerm.toLowerCase().split(' ').every(user => item.afdeling.toLowerCase().includes(user))})
-
+        
         if(naam.length !== 0){
           return naam
         } else if(afdeling.length !== 0){
@@ -70,6 +63,9 @@ export default {
   }
 }
 </script>
+
+
+
 
 <style scoped lang="scss">
 
@@ -98,25 +94,7 @@ export default {
             margin-bottom: 16px;
           }
           .list{
-            .user{
-              width: 100%;
-              border: solid 1px orange;
-              border-left: solid 4px orange;
-              padding: 16px;
-              text-transform: uppercase;
-              padding-bottom: 48px;
-              margin-bottom: 16px;
-              .name{
-                font-size: 24px;
-                color: black;
-                font-weight: bold;
-                margin-bottom: 8px;
-              }
-              .function{
-                color: black;
-                font-weight: 16px;
-              }
-            }
+            
           }
         }
       }

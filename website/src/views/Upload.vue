@@ -9,15 +9,24 @@
                   </router-link>
                 <div class="title">Upload foto</div>
                 <div class="subtitle">Voeg een nieuwe foto toe voor:</div>
-                <select name="names" id="">
-                    <option value="mark">mark</option>
-                    <option value="tom">tom</option>
-                    <option value="pim">pim</option>
-                    <option value="jeffrey">jeffrey</option>
-                    <option value="nick">nick</option>
-                    <option value="dennis">dennis</option>
+
+                <!-- NOTE: MOET DEZE NOG OPHALEN VANUIT DE API --> 
+                <select name="names" id="" v-model="selectedUserId">
+                    <option value="62">mark</option>
+                    <option value="64">tom</option>
+                    <option value="63">pim</option>
+                    <option value="66">jeffrey</option>
+                    <option value="65">nick</option>
+                    <option value="67">dennis</option>
                 </select>
-                <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions"></vue-dropzone>
+                <div class="subtitle">Geselecteerde ID: {{this.selectedUserId}}</div>
+                <vue-dropzone ref="myVueDropzone" id="dropzone" :useCustomSlot=true :options="dropzoneOptions" v-on:vdropzone-sending="sendDropzoneData">
+                  <div class="dropzone-custom-content">
+                    <h3 class="dropzone-custom-title">
+                      Pleur hier een leuk plaatje op!
+                    </h3>
+                  </div>
+                </vue-dropzone>
               </div>
             </div>
           </div>
@@ -29,23 +38,39 @@
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 export default {
-  name: 'app',
+  name: 'fileUpload',
   components: {
     vueDropzone: vue2Dropzone
   },
   data: function () {
     return {
+      selectedUserId: "",
       dropzoneOptions: {
-          url: 'https://httpbin.org/post',
+          url: 'http://dump.lwdev.nl/vue-cursus-api/uploadFoto/upload.php',
           thumbnailWidth: 150,
-          maxFilesize: 0.5,
-          headers: { "My-Awesome-Header": "header value" }
+          maxFilesize: 0.5
       }
     }
-  }
+  },
+  methods: {
+    getUserList(){
+      let api = 'http://dump.lwdev.nl/vue-cursus-api/deelnemers/'
+      this.axios.get(api).then((response) => {
+        this.userList = response.data;
+      })
+    },
+
+    sendDropzoneData(file, xhr, formData){
+      // ADD data to formdate before sending it with dropzone
+      formData.append("id", this.selectedUserId)
+    }
+  },
+  created(){
+    this.getUserList();
+  },
+  
 }
 </script>
-
 
 <style scoped lang="scss">
 
